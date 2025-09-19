@@ -39,7 +39,7 @@ for port in range(start_port, end_port + 1):
 for t in threads:
     t.join()
 
-with open(log_file, "w") as f:
+with open(log_file, "w", encoding="utf-8") as f:
     for port, banner in open_ports:
         f.write(f"Port {port}: OPEN → {banner}\n")
 
