@@ -1,6 +1,10 @@
 import socket
 import threading
 from datetime import datetime
+import os
+
+# Ensure log folder exists
+os.makedirs("scan_logs", exist_ok=True)
 
 target = input("Enter target IP or domain: ")
 start_port = 1
@@ -14,8 +18,12 @@ def scan_port(port):
         s = socket.socket()
         s.settimeout(1)
         s.connect((target, port))
-        print(f"Port {port}: OPEN")
-        open_ports.append(port)
+        try:
+            banner = s.recv(1024).decode().strip()
+        except:
+            banner = "No banner"
+        print(f"Port {port}: OPEN → {banner}")
+        open_ports.append((port, banner))
         s.close()
     except:
         pass
@@ -32,7 +40,7 @@ for t in threads:
     t.join()
 
 with open(log_file, "w") as f:
-    for port in open_ports:
-        f.write(f"Port {port}: OPEN\n")
+    for port, banner in open_ports:
+        f.write(f"Port {port}: OPEN → {banner}\n")
 
 print(f"Results saved to {log_file}")
